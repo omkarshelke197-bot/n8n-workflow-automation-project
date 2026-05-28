@@ -1,3 +1,2 @@
-# Git_OS
-This is my first git hub project
-<pr> Hello world!</pr>
+## N8N Workflow Automation Projects
+This repository contains projects created in n8n
