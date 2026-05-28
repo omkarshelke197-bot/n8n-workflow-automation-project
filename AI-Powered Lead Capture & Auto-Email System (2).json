@@ -1,0 +1,411 @@
+{
+  "name": "AI-Powered Lead Capture & Auto-Email System",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "User Details",
+        "formDescription": "The user will enter the information and the message ",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Full Name"
+            },
+            {
+              "fieldLabel": "Email ID",
+              "fieldType": "email"
+            },
+            {
+              "fieldLabel": "Message",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -80,
+        256
+      ],
+      "id": "186ee491-7fe0-43ff-b3c6-447795054b30",
+      "name": "On form submission",
+      "webhookId": "ca309b7a-9e51-4978-b21a-227118c599c7"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Write a warm, professional welcome email to {{ $json['Full Name'] }} who just enquired about our service. Their message was: {{ $json.Message }}. Keep it under 100 words. Make sure the message should be in 2 paragraph.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        416,
+        256
+      ],
+      "id": "a6d9c8c1-227d-4966-bec4-c8973e893136",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        400,
+        400
+      ],
+      "id": "edd2cb5f-2f1c-4504-993f-c72ef826b440",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "442o56KMsC6PWeqs",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1a1UorgfBXjQ0PapQERO0acY0JkGOknrOD_DINFBuzo4",
+          "mode": "list",
+          "cachedResultName": "DataStored",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1a1UorgfBXjQ0PapQERO0acY0JkGOknrOD_DINFBuzo4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 211486918,
+          "mode": "list",
+          "cachedResultName": "UserData",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1a1UorgfBXjQ0PapQERO0acY0JkGOknrOD_DINFBuzo4/edit#gid=211486918"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email ID": "={{ $json['Email ID'] }}",
+            "Message": "={{ $json.Message }}",
+            "Full Name": "={{ $json['Full Name'] }}"
+          },
+          "matchingColumns": [
+            "Full Name"
+          ],
+          "schema": [
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email ID",
+              "displayName": "Email ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Message",
+              "displayName": "Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        144,
+        256
+      ],
+      "id": "a4472deb-54d6-4aef-9579-ccabcd09c8a5",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "D8JzsCuENCctH9on",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.Message }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        512,
+        416
+      ],
+      "id": "15953adb-2c3b-4628-b81a-5ccdf7982aa5",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "content": "## AI-Powered Lead Capture & Auto-Email System\n\nThis project automates the full cycle: someone fills a Google Form → data is saved to Google Sheets → AI writes a personalized welcome email → it's sent via Gmail → your team gets a Slack ping.",
+        "height": 192,
+        "width": 480,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        256,
+        -128
+      ],
+      "typeVersion": 1,
+      "id": "d8f499c2-4e08-4176-9776-841567238c7e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Form Submission",
+        "height": 224,
+        "width": 166,
+        "color": "#A22F2F"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -112,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "6ccd9177-b1cc-49a2-b841-5ec88805a1e7",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Data Stored to Excel",
+        "height": 256,
+        "width": 192,
+        "color": "#447033"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        96,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "158080ee-df39-4490-af34-2e2988dd9593",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Create a welcome message using AI Agent",
+        "height": 368,
+        "width": 336,
+        "color": "#176878"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        352,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "123062b0-4ef8-4ea2-9fed-bba2c3a1bfd6",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Send welcome message to user\n",
+        "height": 256,
+        "width": 224
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        752,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "83a80a05-5a4f-423c-845d-35b9a26dd288",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "user",
+        "user": {
+          "__rl": true,
+          "value": "U0B5Y9XF482",
+          "mode": "list",
+          "cachedResultName": "agentos1607"
+        },
+        "text": "=Welcome to {{ $('On form submission').item.json['Full Name'] }} to the team.",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        1088,
+        256
+      ],
+      "id": "0464ed10-3ca3-4f27-ae0a-8cc3aac99bd0",
+      "name": "Welcome message to team",
+      "webhookId": "df292fc2-09bb-416b-9ff6-9d957859b34f",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "yIxQ7lEDOtKrPfxI",
+          "name": "Slack OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Append or update row in sheet').item.json['Email ID'] }}",
+        "subject": "=Welcome to Our Team {{ $('Append or update row in sheet').item.json['Full Name'] }}",
+        "emailType": "text",
+        "message": "=",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        816,
+        256
+      ],
+      "id": "09d38c7b-d179-4613-a3fb-1ad52dbcd892",
+      "name": "Send welcome mail to user",
+      "webhookId": "590e62ec-2e07-4ae6-a2d9-b3995efe5294",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "pZfHxEuEpEi2lw2n",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Welcome to team",
+        "height": 256,
+        "width": 224,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1024,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "3c2fbf5d-ba5f-4aff-bd06-3264deaba53f",
+      "name": "Sticky Note5"
+    }
+  ],
+  "pinData": {
+    "On form submission": [
+      {
+        "json": {
+          "Full Name": "Omkar",
+          "Email ID": "omkarshelke197@gmail.com",
+          "Message": "Design a website, My budget is 10,000",
+          "submittedAt": "2026-05-25T11:51:22.350+05:30",
+          "formMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send welcome mail to user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send welcome mail to user": {
+      "main": [
+        [
+          {
+            "node": "Welcome message to team",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "dynamic",
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": -1,
+    "availableInMCP": false
+  },
+  "versionId": "dc31984f-9010-4159-bf56-30dee18eed42",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4db524ab988e70da38e7d949859a2cb76ff0032f61c01e08edec972db2f9011c"
+  },
+  "id": "pWs9Bla75QUgYXaJ",
+  "tags": []
+}
